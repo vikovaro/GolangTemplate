@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	_ "project-name/docs"
+	_ "GolangTemplate/docs"
 
 	"github.com/swaggo/files"
 	"github.com/swaggo/gin-swagger"
@@ -13,7 +13,7 @@ import (
 	"GolangTemplate/internal/config"
 	"GolangTemplate/internal/database"
 	"GolangTemplate/internal/middleware"
-	"project-name/internal/modules/user"
+	"GolangTemplate/internal/modules/user"
 )
 
 // @title Project API
