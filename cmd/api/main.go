@@ -1,6 +1,7 @@
 package main
 
 import (
+	"GolangTemplate/internal/modules/auth"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -35,11 +36,13 @@ func main() {
 
 	router.Use(middleware.Logger())
 	router.Use(middleware.Recovery())
+	router.Use(middleware.Auth(cfg))
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(files.Handler))
 
 	api := router.Group("/api")
 
+	auth.RegisterRoutes(api, db, cfg)
 	user.RegisterRoutes(api, db)
 
 	if err := router.Run(":" + cfg.Port); err != nil {
