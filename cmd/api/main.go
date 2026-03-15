@@ -36,18 +36,26 @@ func main() {
 		log.Fatalf("migration error: %v", err)
 	}
 
+	gin.SetMode(gin.ReleaseMode)
+
 	router := gin.New()
+
+	router.SetTrustedProxies(nil)
 
 	router.Use(middleware.Logger())
 	router.Use(middleware.Recovery())
-	router.Use(middleware.Auth(cfg))
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	api := router.Group("/api")
 
 	auth.RegisterRoutes(api, db, cfg)
-	user.RegisterRoutes(api, db)
+
+	protected := api.Group("/")
+	protected.Use(middleware.Auth(cfg))
+	{
+		user.RegisterRoutes(protected, db)
+	}
 
 	if err := router.Run(":" + cfg.Port); err != nil {
 		log.Fatal(err)
