@@ -5,10 +5,10 @@ import (
 	"strconv"
 
 	"GolangTemplate/internal/modules/user/dto"
-	"GolangTemplate/internal/modules/user/model"
 	"GolangTemplate/internal/modules/user/service"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserHandler struct {
@@ -19,35 +19,6 @@ func NewUserHandler(service *service.UserService) *UserHandler {
 	return &UserHandler{
 		service: service,
 	}
-}
-
-// Create godoc
-// @Summary Create user
-// @Tags users
-// @Accept json
-// @Produce json
-// @Param input body dto.CreateUserDTO true "User data"
-// @Success 201 {object} model.User
-// @Router /users [post]
-func (h *UserHandler) Create(c *gin.Context) {
-	var input dto.CreateUserRequest
-
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	user := model.User{
-		Name:  input.Name,
-		Email: input.Email,
-	}
-
-	if err := h.service.Create(&user); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusCreated, user)
 }
 
 // GetByID godoc
@@ -80,7 +51,7 @@ func (h *UserHandler) GetByID(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path int true "User ID"
-// @Param input body dto.UpdateUserDTO true "User data"
+// @Param input body dto.UpdateUserRequest true "User data"
 // @Success 200 {object} model.User
 // @Router /users/{id} [put]
 func (h *UserHandler) Update(c *gin.Context) {
@@ -103,12 +74,28 @@ func (h *UserHandler) Update(c *gin.Context) {
 		return
 	}
 
-	if input.Name != nil {
-		user.Name = *input.Name
+	if input.Username != nil && *input.Username != user.Username {
+		existing, err := h.service.GetByUsername(*input.Username)
+		if err == nil && existing != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "username already exists"})
+			return
+		}
+		user.Username = *input.Username
 	}
 
 	if input.Email != nil {
 		user.Email = *input.Email
+	}
+	if input.Phone != nil {
+		user.Phone = *input.Phone
+	}
+	if input.Password != nil {
+		hash, err := bcrypt.GenerateFromPassword([]byte(*input.Password), bcrypt.DefaultCost)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to hash password"})
+			return
+		}
+		user.Password = string(hash)
 	}
 
 	if err := h.service.Update(user); err != nil {

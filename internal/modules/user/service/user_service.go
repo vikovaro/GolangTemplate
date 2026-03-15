@@ -23,6 +23,10 @@ func (s *UserService) GetByID(id uint) (*model.User, error) {
 	return s.repo.GetByID(id)
 }
 
+func (s *UserService) GetByUsername(username string) (*model.User, error) {
+	return s.repo.GetByUsername(username)
+}
+
 func (s *UserService) Update(user *model.User) error {
 	return s.repo.Update(user)
 }

@@ -16,7 +16,6 @@ func RegisterRoutes(rg *gin.RouterGroup, db *gorm.DB) {
 
 	users := rg.Group("/users")
 	{
-		users.POST("", h.Create)
 		users.GET("/:id", h.GetByID)
 		users.PUT("/:id", h.Update)
 		users.DELETE("/:id", h.Delete)
