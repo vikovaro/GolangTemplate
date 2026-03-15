@@ -62,6 +62,17 @@ func (h *UserHandler) Update(c *gin.Context) {
 		return
 	}
 
+	userIDFromToken, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	if uint(id) != userIDFromToken.(uint) {
+		c.JSON(http.StatusForbidden, gin.H{"error": "forbidden: cannot edit other user's data"})
+		return
+	}
+
 	var input dto.UpdateUserRequest
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
