@@ -1,29 +1,24 @@
 basePath: /api
 definitions:
-  GolangTemplate_internal_modules_user_dto.CreateUserRequest:
+  dto.UpdateUserRequest:
     properties:
       email:
         maxLength: 255
         type: string
-      name:
+      password:
         maxLength: 100
+        minLength: 6
+        type: string
+      phone:
+        maxLength: 30
         minLength: 2
         type: string
-    required:
-    - email
-    - name
-    type: object
-  GolangTemplate_internal_modules_user_dto.UpdateUserRequest:
-    properties:
-      email:
-        maxLength: 255
-        type: string
-      name:
+      username:
         maxLength: 100
         minLength: 2
         type: string
     type: object
-  GolangTemplate_internal_modules_user_model.User:
+  model.User:
     properties:
       created_at:
         type: string
@@ -44,27 +39,6 @@ info:
   title: Project API
   version: "1.0"
 paths:
-  /users:
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: User data
-        in: body
-        name: input
-        required: true
-        schema:
-          $ref: '#/definitions/GolangTemplate_internal_modules_user_dto.CreateUserRequest'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/GolangTemplate_internal_modules_user_model.User'
-      summary: Create user
-      tags:
-      - users
   /users/{id}:
     delete:
       parameters:
@@ -92,7 +66,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/GolangTemplate_internal_modules_user_model.User'
+            $ref: '#/definitions/model.User'
       summary: Get user by id
       tags:
       - users
@@ -110,14 +84,14 @@ paths:
         name: input
         required: true
         schema:
-          $ref: '#/definitions/GolangTemplate_internal_modules_user_dto.UpdateUserRequest'
+          $ref: '#/definitions/dto.UpdateUserRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/GolangTemplate_internal_modules_user_model.User'
+            $ref: '#/definitions/model.User'
       summary: Update user
       tags:
       - users

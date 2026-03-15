@@ -15,39 +15,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/users": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Create user",
-                "parameters": [
-                    {
-                        "description": "User data",
-                        "name": "input",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/GolangTemplate_internal_modules_user_dto.CreateUserRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/GolangTemplate_internal_modules_user_model.User"
-                        }
-                    }
-                }
-            }
-        },
         "/users/{id}": {
             "get": {
                 "produces": [
@@ -70,7 +37,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/GolangTemplate_internal_modules_user_model.User"
+                            "$ref": "#/definitions/model.User"
                         }
                     }
                 }
@@ -100,7 +67,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/GolangTemplate_internal_modules_user_dto.UpdateUserRequest"
+                            "$ref": "#/definitions/dto.UpdateUserRequest"
                         }
                     }
                 ],
@@ -108,7 +75,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/GolangTemplate_internal_modules_user_model.User"
+                            "$ref": "#/definitions/model.User"
                         }
                     }
                 }
@@ -136,39 +103,31 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "GolangTemplate_internal_modules_user_dto.CreateUserRequest": {
-            "type": "object",
-            "required": [
-                "email",
-                "name"
-            ],
-            "properties": {
-                "email": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 2
-                }
-            }
-        },
-        "GolangTemplate_internal_modules_user_dto.UpdateUserRequest": {
+        "dto.UpdateUserRequest": {
             "type": "object",
             "properties": {
                 "email": {
                     "type": "string",
                     "maxLength": 255
                 },
-                "name": {
+                "password": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 6
+                },
+                "phone": {
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 2
+                },
+                "username": {
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
                 }
             }
         },
-        "GolangTemplate_internal_modules_user_model.User": {
+        "model.User": {
             "type": "object",
             "properties": {
                 "created_at": {
