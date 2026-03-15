@@ -8,8 +8,8 @@ import (
 
 	_ "GolangTemplate/docs"
 
-	"github.com/swaggo/files"
-	"github.com/swaggo/gin-swagger"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 
 	"GolangTemplate/internal/config"
 	"GolangTemplate/internal/database"
@@ -32,13 +32,17 @@ func main() {
 		log.Fatalf("db error: %v", err)
 	}
 
+	if err := database.Migrate(db); err != nil {
+		log.Fatalf("migration error: %v", err)
+	}
+
 	router := gin.New()
 
 	router.Use(middleware.Logger())
 	router.Use(middleware.Recovery())
 	router.Use(middleware.Auth(cfg))
 
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(files.Handler))
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	api := router.Group("/api")
 
