@@ -25,7 +25,7 @@ func NewAuthService(userRepo *repository.UserRepository, cfg *config.Config) *Au
 }
 
 func (s *AuthService) Login(email, password string) (string, error) {
-	user, err := s.userRepo.GetByEmail(email)
+	user, err := s.userRepo.GetByUsername(email)
 	if err != nil {
 		return "", errors.New("invalid credentials")
 	}
@@ -48,10 +48,15 @@ func (s *AuthService) Login(email, password string) (string, error) {
 	return signed, nil
 }
 
-func (s *AuthService) Register(name, email, password string) (*model.User, error) {
-	_, err := s.userRepo.GetByEmail(email)
+func (s *AuthService) Register(username, password, email, phone string) (*model.User, error) {
+	_, err := s.userRepo.GetByUsername(username)
 	if err == nil {
-		return nil, errors.New("email already registered")
+		return nil, errors.New("username already exists")
+	}
+
+	_, err = s.userRepo.GetByEmail(email)
+	if err == nil {
+		return nil, errors.New("email already exists")
 	}
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
@@ -60,8 +65,9 @@ func (s *AuthService) Register(name, email, password string) (*model.User, error
 	}
 
 	user := &model.User{
-		Name:     name,
+		Username: username,
 		Email:    email,
+		Phone:    phone,
 		Password: string(hash),
 	}
 

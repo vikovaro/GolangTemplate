@@ -38,6 +38,16 @@ func (r *UserRepository) GetByEmail(email string) (*model.User, error) {
 	return &user, nil
 }
 
+func (r *UserRepository) GetByUsername(username string) (*model.User, error) {
+	var user model.User
+
+	if err := r.db.Where("username = ?", username).First(&user).Error; err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
 func (r *UserRepository) Update(user *model.User) error {
 	return r.db.Save(user).Error
 }
