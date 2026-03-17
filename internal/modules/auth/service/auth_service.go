@@ -37,6 +37,7 @@ func (s *AuthService) Login(email, password string) (string, error) {
 
 	claims := &middleware.Claims{
 		UserID: user.ID,
+		Role:   string(user.Role),
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
 		},
@@ -73,6 +74,7 @@ func (s *AuthService) Register(username, password, email, phone string) (*model.
 		Email:    email,
 		Phone:    phone,
 		Password: string(hash),
+		Role:     model.RoleUser,
 	}
 
 	if err := s.userRepo.Create(user); err != nil {

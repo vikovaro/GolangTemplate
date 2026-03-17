@@ -1,7 +1,12 @@
 package model
 
-import (
-	"time"
+import "time"
+
+type Role string
+
+const (
+	RoleUser  Role = "user"
+	RoleAdmin Role = "admin"
 )
 
 type User struct {
@@ -10,6 +15,7 @@ type User struct {
 	Phone     string    `gorm:"not null" json:"phone"`
 	Email     string    `gorm:"unique;not null" json:"email"`
 	Password  string    `json:"-"`
+	Role      Role      `gorm:"type:varchar(20);default:'user'" json:"role"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }

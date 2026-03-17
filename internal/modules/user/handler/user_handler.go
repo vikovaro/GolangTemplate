@@ -68,7 +68,8 @@ func (h *UserHandler) Update(c *gin.Context) {
 		return
 	}
 
-	if uint(id) != userIDFromToken.(uint) {
+	userRole, exists := c.Get("role")
+	if uint(id) != userIDFromToken.(uint) && userRole != "admin" {
 		c.JSON(http.StatusForbidden, gin.H{"error": "forbidden: cannot edit other user's data"})
 		return
 	}
