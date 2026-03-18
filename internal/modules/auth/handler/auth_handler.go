@@ -19,6 +19,15 @@ func NewAuthHandler(s *service.AuthService) *AuthHandler {
 	}
 }
 
+// Register godoc
+// @Summary Register new user
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param input body dto.RegisterRequest true "Register data"
+// @Success 201 {object} model.User
+// @Failure 400 {object} map[string]string
+// @Router /auth/register [post]
 func (h *AuthHandler) Register(c *gin.Context) {
 	var input dto.RegisterRequest
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -35,6 +44,16 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	c.JSON(http.StatusCreated, user)
 }
 
+// Login godoc
+// @Summary Login user
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param input body dto.LoginRequest true "Login data"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Router /auth/login [post]
 func (h *AuthHandler) Login(c *gin.Context) {
 	var input dto.LoginRequest
 	if err := c.ShouldBindJSON(&input); err != nil {
