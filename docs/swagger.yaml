@@ -1,5 +1,32 @@
 basePath: /api
 definitions:
+  dto.LoginRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  dto.RegisterRequest:
+    properties:
+      email:
+        type: string
+      password:
+        minLength: 6
+        type: string
+      phone:
+        type: string
+      username:
+        type: string
+    required:
+    - email
+    - password
+    - phone
+    - username
+    type: object
   dto.UpdateUserRequest:
     properties:
       email:
@@ -18,6 +45,14 @@ definitions:
         minLength: 2
         type: string
     type: object
+  model.Role:
+    enum:
+    - user
+    - admin
+    type: string
+    x-enum-varnames:
+    - RoleUser
+    - RoleAdmin
   model.User:
     properties:
       created_at:
@@ -25,9 +60,11 @@ definitions:
       email:
         type: string
       id:
-        type: string
+        type: integer
       phone:
         type: string
+      role:
+        $ref: '#/definitions/model.Role'
       updated_at:
         type: string
       username:
@@ -39,6 +76,68 @@ info:
   title: Project API
   version: "1.0"
 paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Login data
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Login user
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Register data
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.User'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Register new user
+      tags:
+      - auth
   /users/{id}:
     delete:
       parameters:
