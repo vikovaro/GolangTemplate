@@ -3,6 +3,8 @@ package middleware
 import (
 	"net/http"
 
+	apperrors "GolangTemplate/internal/errors"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -11,7 +13,7 @@ func RequireRole(roles ...string) gin.HandlerFunc {
 		roleVal, exists := c.Get("role")
 		if !exists {
 			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
-				"error": "role not found in token",
+				"error": apperrors.ErrRoleNotFoundInToken.Error(),
 			})
 			return
 		}
@@ -26,7 +28,7 @@ func RequireRole(roles ...string) gin.HandlerFunc {
 		}
 
 		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
-			"error": "forbidden",
+			"error": apperrors.ErrForbidden.Error(),
 		})
 	}
 }

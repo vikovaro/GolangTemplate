@@ -2,10 +2,10 @@ package service
 
 import (
 	"GolangTemplate/internal/middleware"
-	"errors"
 	"time"
 
 	"GolangTemplate/internal/config"
+	apperrors "GolangTemplate/internal/errors"
 	"GolangTemplate/internal/modules/user/model"
 	"GolangTemplate/internal/modules/user/repository"
 
@@ -28,11 +28,11 @@ func NewAuthService(userRepo *repository.UserRepository, cfg *config.Config) *Au
 func (s *AuthService) Login(email, password string) (string, error) {
 	user, err := s.userRepo.GetByUsername(email)
 	if err != nil {
-		return "", errors.New("invalid credentials")
+		return "", apperrors.ErrInvalidAuth
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
-		return "", errors.New("invalid credentials")
+		return "", apperrors.ErrInvalidAuth
 	}
 
 	claims := &middleware.Claims{
@@ -56,12 +56,12 @@ func (s *AuthService) Login(email, password string) (string, error) {
 func (s *AuthService) Register(username, password, email, phone string) (*model.User, error) {
 	_, err := s.userRepo.GetByUsername(username)
 	if err == nil {
-		return nil, errors.New("username already exists")
+		return nil, apperrors.ErrUsernameAlreadyExists
 	}
 
 	_, err = s.userRepo.GetByEmail(email)
 	if err == nil {
-		return nil, errors.New("email already exists")
+		return nil, apperrors.ErrEmailAlreadyExists
 	}
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)

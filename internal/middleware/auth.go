@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"GolangTemplate/internal/config"
+	apperrors "GolangTemplate/internal/errors"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -22,7 +23,7 @@ func Auth(cfg *config.Config) gin.HandlerFunc {
 
 		if authHeader == "" {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-				"error": "authorization header required",
+				"error": apperrors.ErrAuthorizationHeaderRequired.Error(),
 			})
 			return
 		}
@@ -31,7 +32,7 @@ func Auth(cfg *config.Config) gin.HandlerFunc {
 
 		if len(parts) != 2 || parts[0] != "Bearer" {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-				"error": "invalid authorization header",
+				"error": apperrors.ErrInvalidAuthorizationHeader.Error(),
 			})
 			return
 		}
@@ -46,7 +47,7 @@ func Auth(cfg *config.Config) gin.HandlerFunc {
 
 		if err != nil || !token.Valid {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-				"error": "invalid or expired token",
+				"error": apperrors.ErrInvalidOrExpiredToken.Error(),
 			})
 			return
 		}

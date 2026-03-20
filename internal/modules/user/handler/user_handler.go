@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
+	apperrors "GolangTemplate/internal/errors"
+
 	"GolangTemplate/internal/modules/user/dto"
 	"GolangTemplate/internal/modules/user/service"
 
@@ -32,13 +34,13 @@ func (h *UserHandler) GetByID(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": apperrors.ErrInvalidID.Error()})
 		return
 	}
 
 	user, err := h.service.GetByID(uint(id))
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": apperrors.ErrUserNotFound.Error()})
 		return
 	}
 
@@ -58,19 +60,19 @@ func (h *UserHandler) Update(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": apperrors.ErrInvalidID.Error()})
 		return
 	}
 
 	userIDFromToken, exists := c.Get("user_id")
 	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": apperrors.ErrUnauthorized.Error()})
 		return
 	}
 
 	userRole, exists := c.Get("role")
 	if uint(id) != userIDFromToken.(uint) && userRole != "admin" {
-		c.JSON(http.StatusForbidden, gin.H{"error": "forbidden: cannot edit other user's data"})
+		c.JSON(http.StatusForbidden, gin.H{"error": apperrors.ErrForbiddenCannotEditOtherUsersData.Error()})
 		return
 	}
 
@@ -82,14 +84,14 @@ func (h *UserHandler) Update(c *gin.Context) {
 
 	user, err := h.service.GetByID(uint(id))
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": apperrors.ErrUserNotFound.Error()})
 		return
 	}
 
 	if input.Username != nil && *input.Username != user.Username {
 		existing, err := h.service.GetByUsername(*input.Username)
 		if err == nil && existing != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "username already exists"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": apperrors.ErrUsernameAlreadyExists.Error()})
 			return
 		}
 		user.Username = *input.Username
@@ -104,7 +106,7 @@ func (h *UserHandler) Update(c *gin.Context) {
 	if input.Password != nil {
 		hash, err := bcrypt.GenerateFromPassword([]byte(*input.Password), bcrypt.DefaultCost)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to hash password"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": apperrors.ErrFailedToHashPassword.Error()})
 			return
 		}
 		user.Password = string(hash)
@@ -128,7 +130,7 @@ func (h *UserHandler) Delete(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": apperrors.ErrInvalidID.Error()})
 		return
 	}
 
